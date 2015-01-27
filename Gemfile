@@ -24,6 +24,9 @@ gem "title"
 gem "uglifier"
 gem "unicorn"
 gem "devise"
+gem "aws"
+gem "daemons"
+gem 'whenever', :require => false
 
 group :development do
   gem "bundler-audit"
