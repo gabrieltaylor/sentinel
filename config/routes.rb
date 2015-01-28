@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   devise_for :users
-  resource :users do
-    resource :services
+  resources :users do
+    resources :services do
+      post :subscribe
+    end
   end
   root to: 'high_voltage/pages#show', id: 'home'
 end

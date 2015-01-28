@@ -24,7 +24,7 @@ gem "title"
 gem "uglifier"
 gem "unicorn"
 gem "devise"
-gem "aws"
+gem "aws-sdk"
 gem "daemons"
 gem 'whenever', :require => false
 
@@ -51,6 +51,7 @@ group :test do
   gem "shoulda-matchers", require: false
   gem "timecop"
   gem "webmock"
+  gem "vcr"
 end
 
 group :staging, :production do
