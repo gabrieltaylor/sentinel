@@ -25,8 +25,7 @@ gem "uglifier"
 gem "unicorn"
 gem "devise"
 gem "aws-sdk"
-gem "daemons"
-gem 'whenever', :require => false
+gem "resque"
 
 group :development do
   gem "bundler-audit"
