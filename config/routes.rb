@@ -4,11 +4,10 @@ Rails.application.routes.draw do
     resources :services do
       post :subscribe
     end
-
-    resources :incidents do
-      resources :alerts do
-        get :speak
-      end
+  end
+  resources :incidents do
+    resources :alerts do
+      get :speak, defaults: { format: "xml" }
     end
   end
 
