@@ -6,7 +6,9 @@ Rails.application.routes.draw do
     end
 
     resources :incidents do
-      resources :alerts
+      resources :alerts do
+        get :speak
+      end
     end
   end
 
