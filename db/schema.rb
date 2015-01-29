@@ -11,10 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150128012122) do
+ActiveRecord::Schema.define(version: 20150128222724) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "alerts", force: true do |t|
+    t.string   "subject"
+    t.text     "message"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "incident_id"
+  end
+
+  add_index "alerts", ["incident_id"], name: "index_alerts_on_incident_id", using: :btree
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false
@@ -31,6 +41,15 @@ ActiveRecord::Schema.define(version: 20150128012122) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
+  create_table "incidents", force: true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.boolean  "acknowledged"
+    t.datetime "closed"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
 
   create_table "services", force: true do |t|
     t.datetime "created_at"

@@ -26,6 +26,8 @@ gem "unicorn"
 gem "devise"
 gem "aws-sdk"
 gem "resque"
+gem "twilio-ruby", "~> 3.12"
+gem "plivo"
 
 group :development do
   gem "bundler-audit"
@@ -51,6 +53,7 @@ group :test do
   gem "timecop"
   gem "webmock"
   gem "vcr"
+  gem "minitest"
 end
 
 group :staging, :production do

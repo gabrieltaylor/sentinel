@@ -4,7 +4,7 @@ class ServicesController < ApplicationController
 
   def subscribe
     @service = Service.find params[:service_id]
-    @current_user = current_user
+    @current_user = User.find params[:user_id]
 
     message_type = request.headers["X_AMZ_SNS_MESSAGE_TYPE"]
     case message_type

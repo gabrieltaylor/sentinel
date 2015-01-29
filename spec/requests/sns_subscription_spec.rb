@@ -1,5 +1,4 @@
 require 'rails_helper'
-include Devise::TestHelpers
 
 RSpec.describe "sns subscribe", :type => :request do
   it "makes get request to Amazon and returns a 200 OK" do
@@ -25,7 +24,7 @@ RSpec.describe "sns subscribe", :type => :request do
        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Host'=>'sns.us-east-1.amazonaws.com', 'User-Agent'=>'Ruby'}).
        to_return(:status => 200, :body => "", :headers => {})
 
-    post "/users/1/services/1/subscribe", body, headers
+    post "/users/#{user.id}/services/#{service.id}/subscribe", body, headers
 
     expect(response.code).to eql("200")
   end
@@ -49,7 +48,7 @@ RSpec.describe "sns notification", :type => :request do
     }
     headers = {"X_AMZ_SNS_MESSAGE_TYPE" => "Notification"}
 
-    post "/users/1/services/1/subscribe", body, headers
+    post "/users/#{user.id}/services/#{service.id}/subscribe", body, headers
 
     expect(response.code).to eql("200")
   end
