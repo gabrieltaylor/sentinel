@@ -3,17 +3,9 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
-  has_many :services, dependent: :destroy
+  belongs_to :account
 
-  def notify(service, subject, message)
-    @client = Twilio::REST::Client.new
-    @client.account.calls.create({
-      :from => '+2267795687',
-      :method => 'GET',
-      :fallback_method => 'GET',
-      :status_callback_method => 'GET',
-      :record => 'false'
-    })
-
+  def contact_number
+    "#{self.country_code}#{self.phone_number}"
   end
 end

@@ -11,10 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150128222724) do
+ActiveRecord::Schema.define(version: 20150130024715) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accounts", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "alerts", force: true do |t|
     t.string   "subject"
@@ -25,6 +31,13 @@ ActiveRecord::Schema.define(version: 20150128222724) do
   end
 
   add_index "alerts", ["incident_id"], name: "index_alerts_on_incident_id", using: :btree
+
+  create_table "coupons", force: true do |t|
+    t.string   "code"
+    t.string   "free_trial_length"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false
@@ -51,14 +64,38 @@ ActiveRecord::Schema.define(version: 20150128222724) do
     t.datetime "updated_at",   null: false
   end
 
+  create_table "plans", force: true do |t|
+    t.string   "name"
+    t.string   "stripe_id"
+    t.float    "price"
+    t.string   "interval"
+    t.text     "features"
+    t.boolean  "highlight"
+    t.integer  "display_order"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "services", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "user_id"
     t.string   "name"
+    t.integer  "account_id"
   end
 
-  add_index "services", ["user_id"], name: "index_services_on_user_id", using: :btree
+  add_index "services", ["account_id"], name: "index_services_on_account_id", using: :btree
+
+  create_table "subscriptions", force: true do |t|
+    t.string   "stripe_id"
+    t.integer  "plan_id"
+    t.string   "last_four"
+    t.integer  "coupon_id"
+    t.string   "card_type"
+    t.float    "current_price"
+    t.integer  "account_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -75,8 +112,10 @@ ActiveRecord::Schema.define(version: 20150128222724) do
     t.datetime "updated_at"
     t.string   "phone"
     t.string   "country_code"
+    t.integer  "account_id"
   end
 
+  add_index "users", ["account_id"], name: "index_users_on_account_id", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 

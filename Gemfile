@@ -28,6 +28,7 @@ gem "aws-sdk"
 gem "resque"
 gem "twilio-ruby", "~> 3.12"
 gem "plivo"
+gem "koudoku", :git => "https://github.com/andrewculver/koudoku.git"
 
 group :development do
   gem "bundler-audit"
