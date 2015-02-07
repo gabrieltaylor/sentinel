@@ -4,7 +4,7 @@ class ServicesController < ApplicationController
 
   def subscribe
     @service = Service.find params[:service_id]
-    @current_user = User.find params[:user_id]
+    @account = Account.find params[:account_id]
 
     message_type = request.headers["X_AMZ_SNS_MESSAGE_TYPE"]
     case message_type
@@ -13,8 +13,9 @@ class ServicesController < ApplicationController
       confirm_subscription(params["SubscribeURL"])
     when "Notification"
       # verify_notification
-      @current_user.delay.notify(@service, params["Subject"], params["Message"])
-      # Resque.enqueue(Watermark, file_token.key)
+      # open a new incident if one is not already open
+      incident = @account.get_or_create_incident_for(@service)
+      incident.delay.notify(@service, params["Subject"], params["Message"])
     when "UnsubscribeConfirmation"
       puts "Unsubscribed"
     end

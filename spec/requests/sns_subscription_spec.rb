@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe "sns subscribe", :type => :request do
   it "makes get request to Amazon and returns a 200 OK" do
-    user = User.create!(email: "gabe@example.com", password: "secretlyaterriblepassword")
-    service = Service.create!(user: user, name: "SNS test")
+    account = Account.create!(name: "Test Account")
+    user = User.create!(email: "gabe@example.com", password: "secretlyaterriblepassword", account: account)
+    service = Service.create!(account: account, name: "SNS test")
     body = {
       "Type" => "SubscriptionConfirmation",
       "MessageId" => "165545c9-2a5c-472c-8df2-7ff2be2b3b1b",
@@ -22,7 +23,7 @@ RSpec.describe "sns subscribe", :type => :request do
        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Host'=>'sns.us-east-1.amazonaws.com', 'User-Agent'=>'Ruby'}).
        to_return(:status => 200, :body => "", :headers => {})
 
-    post "/users/#{user.id}/services/#{service.id}/subscribe", body, headers
+    post "/accounts/#{account.id}/services/#{service.id}/subscribe", body, headers
 
     expect(response.code).to eql("200")
   end
@@ -30,8 +31,9 @@ end
 
 RSpec.describe "sns notification", :type => :request do
   it "returns 200 OK" do
-    user = User.create!(email: "gabe@example.com", password: "secretlyaterriblepassword")
-    service = Service.create!(user: user, name: "SNS test")
+    account = Account.create!(name: "Test Account")
+    user = User.create!(email: "gabe@example.com", password: "secretlyaterriblepassword", account: account)
+    service = Service.create!(account: account, name: "SNS test")
     body = {
       "Type" => "Notification",
       "MessageId" => "22b80b92-fdea-4c2c-8f9d-bdfb0c7bf324",
@@ -46,7 +48,18 @@ RSpec.describe "sns notification", :type => :request do
     }
     headers = {"X_AMZ_SNS_MESSAGE_TYPE" => "Notification"}
 
-    post "/users/#{user.id}/services/#{service.id}/subscribe", body, headers
+    assert_equal 0, Sidekiq::Extensions::DelayedModel.jobs.size
+
+    post "/accounts/#{account.id}/services/#{service.id}/subscribe", body, headers
+
+    assert_equal 1, Sidekiq::Extensions::DelayedModel.jobs.size
+
+    stub_request(:post, "https://MAYWNMYJA0ODM2NJFJZW:Y2JmNjU4ZjhjMGFiMGFkZmVjZTFiODdiOTJlZDc0@api.plivo.com/v1/Account/MAYWNMYJA0ODM2NJFJZW/Call/").
+         with(:body => "{\"to\":\"\",\"from\":null,\"answer_url\":\"http://server.com/incidents/1/alerts/1/speak\",\"answer_method\":\"GET\",\"hangup_url\":\"http://example.com/HangupUrl\"}",
+              :headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'Content-Length'=>'147', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "{}", :headers => {})
+
+    Sidekiq::Extensions::DelayedModel.drain
 
     expect(response.code).to eql("200")
   end

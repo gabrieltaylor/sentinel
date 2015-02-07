@@ -4,8 +4,9 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
   belongs_to :account
+  has_many :notifications
 
   def contact_number
-    "#{self.country_code}#{self.phone_number}"
+    "#{self.country_code}#{self.phone}"
   end
 end

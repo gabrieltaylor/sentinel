@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150130024715) do
+ActiveRecord::Schema.define(version: 20150206214518) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,10 +59,23 @@ ActiveRecord::Schema.define(version: 20150130024715) do
     t.string   "name"
     t.text     "description"
     t.boolean  "acknowledged"
-    t.datetime "closed"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.boolean  "closed",       default: false
+    t.integer  "account_id"
   end
+
+  add_index "incidents", ["account_id"], name: "index_incidents_on_account_id", using: :btree
+
+  create_table "notifications", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "alert_id"
+    t.integer  "user_id"
+  end
+
+  add_index "notifications", ["alert_id"], name: "index_notifications_on_alert_id", using: :btree
+  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "plans", force: true do |t|
     t.string   "name"

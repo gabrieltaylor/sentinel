@@ -5,6 +5,7 @@ require File.expand_path("../../config/environment", __FILE__)
 require "rspec/rails"
 require "shoulda/matchers"
 require 'vcr'
+require 'sidekiq/testing'
 
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |file| require file }
 
@@ -19,6 +20,21 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.use_transactional_fixtures = false
   config.include Rails.application.routes.url_helpers
+
+  config.before(:each) do | example |
+    # Clears out the jobs for tests using the fake testing
+    Sidekiq::Worker.clear_all
+
+    if example.metadata[:sidekiq] == :fake
+      Sidekiq::Testing.fake!
+    elsif example.metadata[:sidekiq] == :inline
+      Sidekiq::Testing.inline!
+    elsif example.metadata[:type] == :feature
+      Sidekiq::Testing.inline!
+    else
+      Sidekiq::Testing.fake!
+    end
+  end
 end
 
 ActiveRecord::Migration.maintain_test_schema!

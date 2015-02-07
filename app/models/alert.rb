@@ -1,13 +1,8 @@
 class Alert < ActiveRecord::Base
   belongs_to :incident
-
-  def send_notification
-    user = Incident.find_on_call_user
-    notification = Notification.new(user)
-    notification.send(self)
-  end
+  has_many :notifications
 
   def speak_url
-    incident_alert_speak(self)
+    Rails.application.routes.url_helpers.incident_alert_speak_url(self.incident, self, :host => 'server.com')
   end
 end
