@@ -11,3 +11,7 @@
 /public/system
 /tags
 /tmp/*
+/client/build
+/client/bower_components
+/client/node_modules
+/client/npm-debug.log
